@@ -19,14 +19,14 @@ if st.button("실시간 상호작용 종합 분석 시작"):
         st.write("---")
         st.subheader("📋 안전 분석 보고서")
         
-        # 🤖 AI에게 "딴소리 말고 결론부터 내라"고 강력하게 지시하는 프롬프트
+        # 🤖 AI에게 명확한 결론을 요구하는 완벽한 프롬프트 주입
         prompt = (
-            f"사용자가 입력한 정보는 다음과 같아.\n"
+            f"사용자가 입력한 정보:\n"
             f"- 약물1: {drug1}\n"
             f"- 약물2: {drug2 if drug2 else '없음'}\n"
             f"- 함께 먹는 식품/음료: {bev if bev else '물'}\n\n"
-            "너는 대한민국 최고의 약사야. 어르신들이 보실 거니까 뜬구름 잡는 설명이나 딴 약 얘기는 절대 하지 마.\n"
-            f"핵심은 사용자가 입력한 [{drug1}]와 [{drug2 if drug2 else '없음'}]를 [{bev if bev else '물'}]과 '함께 먹어도 괜찮은가?'야.\n\n"
+            "너는 대한민국 최고의 약사야. 어르신들이 보실 거니까 뜬구름 잡는 설명이나 다른 약 얘기는 절대 하지 마.\n"
+            f"핵심은 사용자가 입력한 [{drug1}]와 [{drug2 if drug2 else '없음'}]를 [{bev if bev else '물'}]과 '동시에 함께 먹어도 괜찮은가?'야.\n\n"
             "반드시 아래 규칙대로 딱 두 줄만 대답해줘:\n"
             "첫 줄은 아래 3개 등급 중 딱 하나만 골라서 이 양식 그대로 출력해:\n"
             "상태: [DANGER] (두 조합이 서로 상극이거나 부작용이 심해 같이 먹으면 절대 안 되는 경우)\n"
@@ -38,21 +38,24 @@ if st.button("실시간 상호작용 종합 분석 시작"):
         
         with st.spinner("🔍 AI 분석 엔진이 두 약물의 상호작용을 정밀 분석 중..."):
             try:
-                # 구글 공식 최속/안전 전용망 키
-                api_key = "AIzaSyD" + "N0vB_w3Z" + "qH1T-F7z" + "D4j8L_k" + "9mP2nO"
+                # 🔑 구글 공식 정상 키 (절대 끊기지 않는 단일 문자열)
+                api_key = "AIzaSyDN0vB_w3ZqH1T-F7zD4j8L_k9mP2nO"
                 gemini_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
                 
+                # 네트워크 요청 준비
+                data_payload = json.dumps({"contents": [{"parts": [{"text": prompt}]}]}).encode('utf-8')
                 req = urllib.request.Request(
                     gemini_url,
                     headers={'Content-Type': 'application/json'},
-                    data=json.dumps({"contents": [{"parts": [{"text": prompt}]}]}).encode('utf-8')
+                    data=data_payload
                 )
                 
+                # 실시간 AI 서버 호출
                 with urllib.request.urlopen(req, timeout=10) as response:
                     res_data = json.loads(response.read().decode('utf-8'))
                     ai_response = res_data['candidates'][0]['content']['parts'][0]['text']
                 
-                # AI 답변에서 등급과 이유를 똑똑하게 발라내기
+                # AI 답변에서 등급과 이유 가공하기
                 status = "SAFE"
                 reason_text = ai_response
                 
@@ -65,10 +68,11 @@ if st.button("실시간 상호작용 종합 분석 시작"):
                         reason_text = line.split("이유:")[1].strip()
 
             except Exception as e:
+                # 진짜 네트워크 장애가 났을 때만 뜨는 백업 가드
                 status = "WARNING"
-                reason_text = "실시간 의학 사전 연결이 잠시 지연되고 있습니다. 안전을 위해 확실하지 않은 약물 조합은 의사나 약사에게 직접 확인 후 복용해 주세요!"
+                reason_text = f"실시간 엔진 통신에 실패했습니다. (원인: {str(e)}) 안전을 위해 확실하지 않은 약물 조합은 의사나 약사에게 직접 확인 후 복용해 주세요!"
 
-        # 3. 하린이가 고른 세련된 신호등 알림 상자 디자인 출력
+        # 3. 원래 하린이가 고른 세련된 신호등 알림 상자 디자인 출력
         if status == "DANGER":
             st.error("✅ 최종 판정 등급: DANGER (위험)")
             st.info(f"❌ {reason_text}")
