@@ -36,7 +36,7 @@ if st.button("실시간 상호작용 종합 분석 시작"):
         with st.spinner("🔍 구글 의학 데이터베이스에서 실시간 조합 분석 중..."):
             try:
                 # 🔑 구글 공식 100% 무료 개발자 통로 직접 연결 (지연 및 400 에러 완전 해결)
-                api_key = "AIzaSyDN" + "0vB_w3ZqH" + "1T-F7zD4j" + "8L_k9mP2nO"
+                api_key = "AQ.Ab8RN6KVvB6rUWeg72IeFO3bwElSnab_1fC_HWKOK8W71-6sIQ"
                 gemini_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
                 
                 payload = {
