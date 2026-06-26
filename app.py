@@ -1,7 +1,7 @@
 import streamlit as st
 from google import genai
 
-# 1. 앱 디자인 설정 (원래 하린이의 깔끔한 신호등 스타일)
+# 1. 앱 디자인 설정 (원래 하린이의 깔끔한 신호등 스타일) 
 st.set_page_config(page_title="약 결합 안전 분석기", page_icon="🛡️")
 st.title("🛡️ 약 결합 안전 분석기")
 st.markdown("##### 구글 정식 AI 기반 실시간 의약품 종합 분석 시스템")
